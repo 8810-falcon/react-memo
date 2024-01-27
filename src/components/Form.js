@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { db } from "../firebase";
-import { collection } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import MemoList from "../components/MemoList";
 
 export default function Form() {
@@ -11,8 +11,10 @@ export default function Form() {
     console.log("入力確定" + memo);
     setList([...list, memo]);
     document.getElementById("memo-input").value = "";
-    const memoCollectionRef = collection(db, "memo1");
-    console.log(memoCollectionRef);
+    const memoCollectionRef = collection(db, "react-memo");
+    getDocs(memoCollectionRef).then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => console.log(doc));
+    });
   };
   return (
     <div>
