@@ -13,7 +13,7 @@ export default function Form() {
     document.getElementById("memo-input").value = "";
     const memoCollectionRef = collection(db, "react-memo");
     getDocs(memoCollectionRef).then((querySnapshot) => {
-      querySnapshot.docs.forEach((doc) => console.log(doc));
+      querySnapshot.docs.map((doc) => console.log(doc.data()));
     });
   };
   return (
