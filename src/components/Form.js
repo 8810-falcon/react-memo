@@ -1,26 +1,37 @@
 import React from "react";
 import { useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  doc,
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import MemoList from "../components/MemoList";
 
 export default function Form() {
-  const [list, setList] = useState([]);
+  const [idList, setId] = useState([]);
   const addMemo = async () => {
     const memo = document.getElementById("memo-input").value;
     console.log("入力確定" + memo);
-    setList([...list, memo]);
     const memoCollectionRef = collection(db, "react-memo");
     await addDoc(memoCollectionRef, {
       memo: memo,
     });
-    /** 
-    getDocs(memoCollectionRef).then((querySnapshot) => {
-      querySnapshot.docs.map((doc) => console.log(doc.data()));
-    });
-    */
     document.getElementById("memo-input").value = "";
   };
+
+  function handleDelete() {
+    console.log("削除開始");
+    const memoCollectionRef = collection(db, "react-memo");
+    getDocs(memoCollectionRef).then((querySnapshot) => {
+      setId(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      idList.map(async (memo) => {
+        await deleteDoc(doc(db, "react-memo", memo.id));
+      });
+    });
+  }
   return (
     <div>
       <form>
@@ -33,11 +44,7 @@ export default function Form() {
         <input onClick={addMemo} type="button" value="追加" />
         <input onClick={handleDelete} type="button" value="クリア" />
       </form>
-      <MemoList addMemo={list} />
+      <MemoList />
     </div>
   );
-  function handleDelete() {
-    setList(list, null);
-    window.location.reload();
-  }
 }
